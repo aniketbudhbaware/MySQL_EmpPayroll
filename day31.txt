@@ -1,0 +1,181 @@
+MySQL queries for employee pay roll
+----------------------------------------------------------------
+#UC->1
+----------------------------------------------------------------
+mysql> create database Payroll_Service;
+Query OK, 1 row affected (0.67 sec)
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| payroll_service    |
+| performance_schema |
+| person_info        |
+| sys                |
++--------------------+
+6 rows in set (0.46 sec)
+
+mysql> use payroll_service;
+Database changed
+----------------------------------------------------------------
+#UC->2
+----------------------------------------------------------------
+mysql> use payroll_service;
+Database changed
+mysql> create table employee_payroll(
+    -> EmpId int unsigned not null auto_increment,
+    -> EmpName varchar(200) not null,
+    -> Salary double not null,
+    -> EmpStart Date not null,
+    -> primary key (EmpId)
+    -> );
+Query OK, 0 rows affected (0.16 sec)
+
+mysql> desc employee_payroll;
++----------+--------------+------+-----+---------+----------------+
+| Field    | Type         | Null | Key | Default | Extra          |
++----------+--------------+------+-----+---------+----------------+
+| EmpId    | int unsigned | NO   | PRI | NULL    | auto_increment |
+| EmpName  | varchar(200) | NO   |     | NULL    |                |
+| Salary   | double       | NO   |     | NULL    |                |
+| EmpStart | date         | NO   |     | NULL    |                |
++----------+--------------+------+-----+---------+----------------+
+4 rows in set (0.01 sec)
+----------------------------------------------------------------
+#UC->3
+----------------------------------------------------------------
+mysql> insert into employee_payroll (EmpName,Salary,EmpStart) values ("rahul",3500000.0,'1994-06-27');
+Query OK, 1 row affected (0.17 sec)
+
+mysql> insert into employee_payroll(EmpName, Salary, EmpStart)values('shiva',2000000.00,'2019-11-13');
+Query OK, 1 row affected (0.20 sec)
+
+mysql> insert into employee_payroll(EmpName, Salary, EmpStart)values('abhilash',1800000.00,'2019-11-13');
+Query OK, 1 row affected (0.06 sec)
+
+mysql> insert into employee_payroll(EmpName, Salary, EmpStart)values('zeeshan',4800000.00,'2015-01-23');
+Query OK, 1 row affected (0.13 sec)
+
+insert into employee_payroll(EmpName, Salary, EmpStart)values('shivani',1000000.00,'2019-05-03');
+Query OK, 1 row affected (0.10 sec)
+
+mysql> insert into employee_payroll(EmpName, Salary, EmpStart)values('vaishnavi',9000000.00,'2020-06-18');
+Query OK, 1 row affected (0.11 sec)
+
+----------------------------------------------------------------
+#UC->4
+----------------------------------------------------------------
+ select * from employee_payroll;
++-------+-----------+---------+------------+
+| EmpId | EmpName   | Salary  | EmpStart   |
++-------+-----------+---------+------------+
+|     1 | rahul     | 3500000 | 1994-06-27 |
+|     2 | shiva     | 2000000 | 2019-11-13 |
+|     3 | abhilash  | 1800000 | 2019-11-13 |
+|     4 | zeeshan   | 4800000 | 2015-01-23 |
+|     5 | shivani   | 1000000 | 2019-05-03 |
+|     6 | vaishnavi | 9000000 | 2020-06-18 |
++-------+-----------+---------+------------+
+6 rows in set (0.00 sec)
+
+----------------------------------------------------------------
+#UC->5
+----------------------------------------------------------------
+mysql> SELECT salary FROM employee_payroll where EmpName  = 'rahul';
++---------+
+| salary  |
++---------+
+| 3500000 |
++---------+
+1 row in set (0.02 sec)
+
+mysql> SELECT salary FROM employee_payroll WHERE EmpStart BETWEEN CAST('2019-01-23' as date) and date (now());
++---------+
+| salary  |
++---------+
+| 2000000 |
+| 1800000 |
+| 1000000 |
+| 9000000 |
++---------+
+4 rows in set (0.00 sec)
+
+----------------------------------------------------------------
+#UC->6
+----------------------------------------------------------------
+mysql> ALTER TABLE employee_payroll ADD gender CHAR(1) AFTER EmpName;
+Query OK, 0 rows affected (3.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> UPDATE employee_payroll set gender = 'F' where EmpName = 'shivani' or EmpName = 'vaishnavi';
+Query OK, 2 rows affected (0.16 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+UPDATE employee_payroll set gender = 'M' where EmpName = 'rahul' or EmpName = 'shiva' or EmpName = 'abhilash' or EmpName = 'zeeshan';
+Query OK, 4 rows affected (0.07 sec)
+Rows matched: 4  Changed: 4  Warnings: 0
+
+mysql> select * from employee_payroll;
++-------+-----------+--------+---------+------------+
+| EmpId | EmpName   | gender | Salary  | EmpStart   |
++-------+-----------+--------+---------+------------+
+|     1 | rahul     | M      | 3500000 | 1994-06-27 |
+|     2 | shiva     | M      | 2000000 | 2019-11-13 |
+|     3 | abhilash  | M      | 1800000 | 2019-11-13 |
+|     4 | zeeshan   | M      | 4800000 | 2015-01-23 |
+|     5 | shivani   | F      | 1000000 | 2019-05-03 |
+|     6 | vaishnavi | F      | 9000000 | 2020-06-18 |
++-------+-----------+--------+---------+------------+
+6 rows in set (0.02 sec)
+
+----------------------------------------------------------------
+#UC->7
+----------------------------------------------------------------
+
+mysql> SELECT gender, SUM(Salary) FROM employee_payroll GROUP BY gender;
++--------+-------------+
+| gender | SUM(Salary) |
++--------+-------------+
+| M      |    12100000 |
+| F      |    10000000 |
++--------+-------------+
+2 rows in set (0.04 sec)
+
+mysql> SELECT gender, AVG(Salary) FROM employee_payroll GROUP BY gender;
++--------+-------------+
+| gender | AVG(Salary) |
++--------+-------------+
+| M      |     3025000 |
+| F      |     5000000 |
++--------+-------------+
+2 rows in set (0.01 sec)
+
+mysql> SELECT gender, MIN(Salary) FROM employee_payroll GROUP BY gender;
++--------+-------------+
+| gender | MIN(Salary) |
++--------+-------------+
+| M      |     1800000 |
+| F      |     1000000 |
++--------+-------------+
+2 rows in set (0.02 sec)
+
+mysql> SELECT gender, MAX(Salary) FROM employee_payroll GROUP BY gender;
++--------+-------------+
+| gender | MAX(Salary) |
++--------+-------------+
+| M      |     4800000 |
+| F      |     9000000 |
++--------+-------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT gender, COUNT(EmpName) FROM employee_payroll GROUP BY gender;
++--------+----------------+
+| gender | COUNT(EmpName) |
++--------+----------------+
+| M      |              4 |
+| F      |              2 |
++--------+----------------+
+2 rows in set (0.01 sec)
